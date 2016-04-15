@@ -7,11 +7,11 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
  , m_doc(NULL), m_page(NULL), m_index(0), m_scale(1.0f)
 {
-    scrollArea = new QScrollArea;
-    scrollArea->setAlignment(Qt::AlignCenter);
-    label = new Page;
-    scrollArea->setWidget(label);
-    this->setCentralWidget(scrollArea);
+    m_scrollArea = new QScrollArea;
+    m_scrollArea->setAlignment(Qt::AlignCenter);
+    m_label = new Page;
+    m_scrollArea->setWidget(m_label);
+    this->setCentralWidget(m_scrollArea);
     this->setWindowState(Qt::WindowMaximized);
 
     createActions();
@@ -33,7 +33,7 @@ MainWindow::~MainWindow()
 void MainWindow::openDocument()
 {
     QString file = QFileDialog::getOpenFileName(this,
-            tr("Open PDF/XPS file/.."), ".", "PDF (*.pdf);;XPS (*.xps);;EPUB (*.epub)");
+            tr("Open PDF/XPS/EPUB/.."), ".", "PDF (*.pdf);;XPS (*.xps);;EPUB (*.epub)");
     if (file.isEmpty()) {
         return;
     }
@@ -101,7 +101,7 @@ void MainWindow::zoomIn()
         return;
     }
     m_scale += 0.1f;
-    label->setScale(m_scale);
+    m_label->setScale(m_scale);
 
     updateTitle();
 }
@@ -115,7 +115,7 @@ void MainWindow::zoomOut()
         return;
     }
     m_scale -= 0.1f;
-    label->setScale(m_scale);
+    m_label->setScale(m_scale);
 
     updateTitle();
 }
@@ -140,12 +140,12 @@ void MainWindow::createActions()
 
 void MainWindow::createToolBars()
 {
-    toolBar = this->addToolBar(tr("ToolBar"));
-    toolBar->addAction(openAction);
-    toolBar->addAction(previousPageAction);
-    toolBar->addAction(nextPageAction);
-    toolBar->addAction(zoomInAction);
-    toolBar->addAction(zoomOutAction);
+    m_toolBar = this->addToolBar(tr("ToolBar"));
+    m_toolBar->addAction(openAction);
+    m_toolBar->addAction(previousPageAction);
+    m_toolBar->addAction(nextPageAction);
+    m_toolBar->addAction(zoomInAction);
+    m_toolBar->addAction(zoomOutAction);
 }
 
 void MainWindow::openPage(int index)
@@ -159,8 +159,8 @@ void MainWindow::openPage(int index)
         return;
     }
 
-    label->setPage(m_page, m_scale);
-    scrollArea->verticalScrollBar();
+    m_label->setPage(m_page, m_scale);
+    m_scrollArea->verticalScrollBar();
 
     updateTitle();
 }
@@ -178,78 +178,4 @@ void MainWindow::updateTitle()
     title += " - ";
     title += "Scale " + QString::number(qRound(m_scale * 100)) + "%";
     this->setWindowTitle(title);
-}
-
-Page::Page(QWidget *parent)
-    : QLabel(parent),
-      m_page(NULL),
-      m_scale(1.0f)
-{
-
-}
-
-Page::~Page()
-{
-}
-
-void Page::setPage(MuPDF::Page *page, float scale)
-{
-    m_page = page;
-    m_scale = scale;
-    updatePage();
-}
-
-void Page::setScale(float scale)
-{
-    m_scale = scale;
-    updatePage();
-}
-
-void Page::mousePressEvent(QMouseEvent *event)
-{
-    m_pressPoint = event->localPos();
-}
-
-void Page::mouseReleaseEvent(QMouseEvent *event)
-{
-    QPointF point;
-    float x0, y0, x1, y1;
-
-    if (!m_page) {
-        return;
-    }
-
-    point = event->localPos();
-    if (point != m_pressPoint) {
-        if (m_pressPoint.x() > point.x()) {
-            x0 = point.x();
-            x1 = m_pressPoint.x();
-        } else {
-            x0 = m_pressPoint.x();
-            x1 = point.x();
-        }
-        if (m_pressPoint.y() > point.y()) {
-            y0 = point.y();
-            y1 = m_pressPoint.y();
-        } else {
-            y0 = m_pressPoint.y();
-            y1 = point.y();
-        }
-        QRectF rect(x0, y0, x1 - x0, y1 - y0);
-        rect = MuPDF::mapToOrigin(rect, m_scale, m_scale);
-        qDebug() << m_page->text(rect);
-    }
-}
-
-void Page::updatePage()
-{
-    QImage image;
-
-    if (!m_page) {
-        return;
-    }
-
-    image = m_page->renderImage(m_scale, m_scale);
-    this->setPixmap(QPixmap::fromImage(image));
-    this->resize(this->sizeHint());
 }
