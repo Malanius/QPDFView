@@ -8,8 +8,8 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QScrollArea>
-#include "mupdf-qt.h"
 
+#include "mupdf-qt.h"
 #include "page.hpp"
 
 class QScrollArea;

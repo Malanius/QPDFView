@@ -4,85 +4,24 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = QPDFView
+TARGET   = QPDFView
 TEMPLATE = app
 
+SOURCES  += main.cpp       \
+            mainwindow.cpp \
+            page.cpp
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    page.cpp
-
-HEADERS  += mainwindow.h \
-    page.hpp
+HEADERS  += mainwindow.h  \
+            page.hpp
 
 FORMS    += mainwindow.ui
 
+INCLUDEPATH += ../3rdparty/lib/Linux-x64/include
+DEPENDPATH  += ../3rdparty/lib/Linux-x64
 
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64/include
+unix:!macx: LIBS += -L../3rdparty/lib/Linux-x64/ -lmupdf-qt -lmupdf -lz -lfreetype -ljpeg -ljbig2dec -lopenjpeg  -lmujs
+unix:!macx: LIBS += -L/usr/lib -lssl -lcrypto
 
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -lmupdf-qt
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64/include
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libmupdf-qt.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -lmupdf
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libmupdf.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -lz
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libz.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -lfreetype
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libfreetype.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -ljpeg
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libjpeg.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -ljbig2dec
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libjbig2dec.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -lopenjpeg
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libopenjpeg.a
-
-unix:!macx: LIBS += -L$$PWD/../3rdparty/lib/Linux-x64/ -lmujs
-
-INCLUDEPATH += $$PWD/../3rdparty/lib/Linux-x64
-DEPENDPATH += $$PWD/../3rdparty/lib/Linux-x64
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../3rdparty/lib/Linux-x64/libmujs.a
-
-
-unix:!macx: LIBS += -L$$PWD/../usr/lib -lssl -lcrypto
-
-INCLUDEPATH += $$PWD/../usr/lib
-DEPENDPATH += $$PWD/../usr/lib
 

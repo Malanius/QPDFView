@@ -5,14 +5,18 @@
 #include <QMouseEvent>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
- , m_doc(NULL), m_page(NULL), m_index(0), m_scale(1.0f)
+ , m_doc(nullptr), m_page(nullptr), m_index(0), m_scale(1.0f)
 {
     m_scrollArea = new QScrollArea;
+
+    // Aligne for center document
     m_scrollArea->setAlignment(Qt::AlignCenter);
+
     m_label = new Page;
     m_scrollArea->setWidget(m_label);
+
     this->setCentralWidget(m_scrollArea);
-    this->setWindowState(Qt::WindowMaximized);
+    this->resize(800, 600);
 
     createActions();
     createToolBars();
@@ -20,38 +24,49 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
-    if (m_page) {
-            delete m_page;
-            m_page = NULL;
-        }
-        if (m_doc) {
-            delete m_doc;
-            m_doc = NULL;
-        }
+    if(m_page)
+    {
+        delete m_page;
+        m_page = nullptr;
+    }
+
+    if(m_doc)
+    {
+        delete m_doc;
+        m_doc = nullptr;
+    }
 }
 
 void MainWindow::openDocument()
 {
     QString file = QFileDialog::getOpenFileName(this,
             tr("Open PDF/XPS/EPUB/.."), ".", "PDF (*.pdf);;XPS (*.xps);;EPUB (*.epub)");
-    if (file.isEmpty()) {
+
+    if (file.isEmpty())
+    {
         return;
     }
 
-    if (m_page) {
+    if(m_page)
+    {
         delete m_page;
-        m_page = NULL;
+        m_page = nullptr;
     }
-    if (m_doc) {
+
+    if(m_doc)
+    {
         delete m_doc;
-        m_doc = NULL;
+        m_doc = nullptr;
     }
+
     m_doc = MuPDF::loadDocument(file);
-    if (NULL == m_doc) {
+    if(nullptr == m_doc)
+    {
         return;
     }
 
-    if (m_doc->needsPassword()) {
+    if(m_doc->needsPassword())
+    {
         bool ok;
         QString password;
         do {
@@ -72,10 +87,13 @@ void MainWindow::openDocument()
 
 void MainWindow::previousPage()
 {
-    if (NULL == m_doc) {
+    if(nullptr == m_doc)
+    {
         return;
     }
-    if (m_index > 0) {
+
+    if(m_index > 0)
+    {
         --m_index;
     }
     openPage(m_index);
@@ -83,23 +101,31 @@ void MainWindow::previousPage()
 
 void MainWindow::nextPage()
 {
-    if (NULL == m_doc) {
+    if(nullptr == m_doc)
+    {
         return;
     }
-    if (m_index < m_numPages - 1) {
+
+    if(m_index < m_numPages - 1)
+    {
         ++m_index;
     }
+
     openPage(m_index);
 }
 
 void MainWindow::zoomIn()
 {
-    if (NULL == m_doc) {
+    if(nullptr == m_doc)
+    {
         return;
     }
-    if (m_scale >= 10.0f) {
+
+    if(m_scale >= 10.0f)
+    {
         return;
     }
+
     m_scale += 0.1f;
     m_label->setScale(m_scale);
 
@@ -108,12 +134,16 @@ void MainWindow::zoomIn()
 
 void MainWindow::zoomOut()
 {
-    if (NULL == m_doc) {
+    if(nullptr == m_doc)
+    {
         return;
     }
-    if (m_scale < 0.15f) {
+
+    if(m_scale < 0.15f)
+    {
         return;
     }
+
     m_scale -= 0.1f;
     m_label->setScale(m_scale);
 
@@ -150,12 +180,15 @@ void MainWindow::createToolBars()
 
 void MainWindow::openPage(int index)
 {
-    if (m_page) {
+    if (m_page)
+    {
         delete m_page;
-        m_page = NULL;
+        m_page = nullptr;
     }
+
     m_page = m_doc->page(index);
-    if (NULL == m_page) {
+    if (nullptr == m_page)
+    {
         return;
     }
 
@@ -168,11 +201,15 @@ void MainWindow::openPage(int index)
 void MainWindow::updateTitle()
 {
     QString title;
-    if (m_title.isEmpty()) {
+    if (m_title.isEmpty())
+    {
         title = "No Title - ";
-    } else {
+    }
+    else
+    {
         title = m_title + " - ";
     }
+
     title += "Page " + QString::number(m_index + 1)
         + "/" + QString::number(m_numPages);
     title += " - ";
